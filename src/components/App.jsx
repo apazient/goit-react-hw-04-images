@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Component } from 'react';
 import ImageGallery from './ImageGallery/ImageGallery';
 import SearchBar from './SearchBar/SearchBar';
 
