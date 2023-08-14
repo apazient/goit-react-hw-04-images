@@ -15,10 +15,8 @@ export function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [largeImg, setLargeImg] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [per_page, setPer_page] = useState(12);
   const [totalHits, setTotalHits] = useState(null);
   const isfirstRender = useRef(true);
-  const [prevQuery, setPrevQuery] = useState('');
 
   useEffect(() => {
     if (isfirstRender.current) {
@@ -27,11 +25,10 @@ export function App() {
     }
 
     const fetchData = async () => {
-      const isNeuQuery = prevQuery !== query;
       try {
         setLoading(true);
-        const { data, totalHits } = await fetchImg(query, { page, per_page });
-        isNeuQuery ? setImages(data) : setImages(prev => [...prev, ...data]);
+        const { data, totalHits } = await fetchImg(query, { page });
+        setImages(prev => [...prev, ...data]);
         setTotalHits(totalHits);
       } catch (error) {
       } finally {
@@ -41,12 +38,9 @@ export function App() {
     fetchData();
   }, [query, page]);
 
-  useEffect(() => {
-    setPrevQuery(query);
-  }, [query]);
-
   const handleSearch = query => {
     setQuery(query);
+    setImages([]);
     setPage(1);
   };
 
