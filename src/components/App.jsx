@@ -1,10 +1,63 @@
-import { useState } from 'react';
-import ImageGallery from './ImageGallery/ImageGallery';
+import { useState, useEffect } from 'react';
+import { ImageGallery } from './ImageGallery/ImageGallery';
+import { RevolvingDot } from 'react-loader-spinner';
+import Button from './Button/Button';
 import SearchBar from './SearchBar/SearchBar';
+import Modal from './Modal/Modal';
+import style from './Modal/Modal.module.css';
+import { fetchImg } from 'services/image-api';
+import { useRef } from 'react';
 
 export function App() {
-  const [query, setQuery] = useState();
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [images, setImages] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [largeImg, setLargeImg] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [per_page, setPer_page] = useState(12);
+  const [totalHits, setTotalHits] = useState(null);
+  const isfirstRender = useRef(true);
+  const [prevQuery, setPrevQuery] = useState('');
 
+  useEffect(() => {
+    if (isfirstRender.current) {
+      isfirstRender.current = false;
+      return;
+    }
+
+    const fetchData = async () => {
+      const isNeuQuery = prevQuery !== query;
+      try {
+        setLoading(true);
+        const { data, totalHits } = await fetchImg(query, { page, per_page });
+        isNeuQuery ? setImages(data) : setImages(prev => [...prev, ...data]);
+        setTotalHits(totalHits);
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [query, page]);
+
+  useEffect(() => {
+    setPrevQuery(query);
+  }, [query]);
+
+  const handleSearch = query => {
+    setQuery(query);
+    setPage(1);
+  };
+
+  const handlePageLoad = () => {
+    setPage(prev => prev + 1);
+  };
+
+  const toggleModal = url => {
+    setIsModalOpen(prev => !prev);
+    setLargeImg(url);
+  };
   return (
     <div
       style={{
@@ -14,8 +67,27 @@ export function App() {
         paddingBottom: '24px',
       }}
     >
-      <SearchBar onSubmit={setQuery}></SearchBar>
-      <ImageGallery query={query}></ImageGallery>
+      <SearchBar onSearch={handleSearch}></SearchBar>
+      <ImageGallery data={images} toggleModal={toggleModal} />
+      {images.length > 0 && totalHits - images.length && (
+        <div
+          style={{
+            display: 'block',
+            textAlign: 'center',
+          }}
+        >
+          {!loading ? (
+            <Button clickMore={handlePageLoad} />
+          ) : (
+            <RevolvingDot wrapperStyle={{ justifyContent: 'center' }} />
+          )}
+          {isModalOpen && (
+            <Modal closeModal={toggleModal}>
+              <img src={largeImg} alt="items" className={style.ModalImg} />
+            </Modal>
+          )}
+        </div>
+      )}
     </div>
   );
 }

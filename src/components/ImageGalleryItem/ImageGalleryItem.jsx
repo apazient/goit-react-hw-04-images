@@ -1,15 +1,23 @@
 import style from './ImageGalleryItem.module.css';
+import PropTypes from 'prop-types';
 
-const ImageGalleryItem = ({ url, largeImageURL, alt, onClick }) => {
+export const ImageGalleryItem = ({ id, largeImg, url, alt, onClick }) => {
   return (
-    <li className={style.ImageGalleryItem}>
+    <li key={id} className={style.ImageGalleryItem}>
       <img
         className={style['ImageGalleryItem-image']}
         src={url}
         alt={alt}
-        onClick={() => onClick(largeImageURL)}
+        onClick={() => onClick(largeImg)}
       />
     </li>
   );
 };
-export default ImageGalleryItem;
+ImageGalleryItem.propTypes = {
+  id: PropTypes.number,
+
+  largeImg: PropTypes.string,
+  url: PropTypes.string,
+  alt: PropTypes.string,
+  onClick: PropTypes.func,
+};
