@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { createPortal } from 'react-dom';
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -25,7 +24,7 @@ const Modal = ({ children, closeModal }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [closeModal]);
 
   return createPortal(
     <div className={style.overlay} onClick={onBackdropClick}>

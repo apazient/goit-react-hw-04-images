@@ -3,7 +3,6 @@ import { ImSearch } from 'react-icons/im';
 import PropTypes from 'prop-types';
 import style from './SearchBar.module.css';
 import React from 'react';
-import { useRef } from 'react';
 
 export const SearchBar = ({ onSearch }) => {
   const [query, setQuery] = useState('');
